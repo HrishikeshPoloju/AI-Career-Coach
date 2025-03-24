@@ -29,7 +29,10 @@ export async function updateUser(data) {
         // If industry doesn't exist, create it with default values
         if (!industryInsight) {
           const insights = await generateAIInsights(data.industry);
-
+        
+          // Ensure demandLevel is uppercase to match Prisma ENUM
+          insights.demandLevel = insights.demandLevel.toUpperCase(); // "High" → "HIGH"
+          insights.marketOutlook = insights.marketOutlook.toUpperCase(); // "Positive" → "POSITIVE"        
           industryInsight = await db.industryInsight.create({
             data: {
               industry: data.industry,
@@ -38,6 +41,7 @@ export async function updateUser(data) {
             },
           });
         }
+        
 
         // Now update the user
         const updatedUser = await tx.user.update({
